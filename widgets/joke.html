@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Joke of the Day</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+  }
+  .container {
+    text-align: center;
+    color: var(--color);
+    text-shadow: 0 1px 10px rgba(0,0,0,0.5);
+    width: 100%;
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+  .container.visible { opacity: 1; }
+  .emoji {
+    font-size: min(8vw, 8vh, 3rem);
+    margin-bottom: 0.4em;
+    text-shadow: none;
+  }
+  .setup {
+    font-size: min(4vw, 5vh, 1.8rem);
+    font-weight: 400;
+    line-height: 1.4;
+    margin-bottom: 0.6em;
+  }
+  .punchline {
+    font-size: min(4vw, 5vh, 1.8rem);
+    font-weight: 600;
+    line-height: 1.4;
+    opacity: 0;
+    transition: opacity 1.5s ease;
+  }
+  .punchline.visible { opacity: 1; }
+  .single {
+    font-size: min(4vw, 5vh, 1.8rem);
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  .category {
+    font-size: min(1.5vw, 2vh, 0.65rem);
+    font-weight: 600;
+    opacity: 0.3;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 1.2em;
+  }
+  .divider {
+    width: 40px;
+    height: 1px;
+    background: var(--color);
+    opacity: 0.2;
+    margin: 0.8em auto;
+  }
+</style>
+</head>
+<body>
+<div class="container" id="container">
+  <div class="emoji" id="emoji">😄</div>
+  <div id="joke-area"></div>
+  <div class="divider"></div>
+  <div class="category" id="category"></div>
+</div>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const color = params.get('color') || '#ffffff';
+  const interval = parseInt(params.get('interval') || '60') * 1000;
+  const category = params.get('category') || 'Any';
+  const revealDelay = parseInt(params.get('reveal') || '3') * 1000;
+
+  document.documentElement.style.setProperty('--color', color);
+
+  const container = document.getElementById('container');
+  const jokeArea = document.getElementById('joke-area');
+  const categoryEl = document.getElementById('category');
+  const emojiEl = document.getElementById('emoji');
+
+  const emojis = ['😄', '😂', '🤣', '😆', '😜', '🤪', '😹', '💀', '🎭', '🃏'];
+  const fallbackJokes = [
+    { type: 'twopart', setup: 'Why do programmers prefer dark mode?', delivery: 'Because light attracts bugs.', category: 'Programming' },
+    { type: 'twopart', setup: 'What do you call a fake noodle?', delivery: 'An impasta.', category: 'Pun' },
+    { type: 'twopart', setup: "Why don't scientists trust atoms?", delivery: 'Because they make up everything.', category: 'Pun' },
+    { type: 'single', joke: 'I told my wife she was drawing her eyebrows too high. She looked surprised.', category: 'Pun' },
+    { type: 'twopart', setup: 'Why did the scarecrow win an award?', delivery: 'Because he was outstanding in his field.', category: 'Pun' },
+    { type: 'single', joke: "Parallel lines have so much in common. It's a shame they'll never meet.", category: 'Pun' },
+    { type: 'twopart', setup: 'What do you call a bear with no teeth?', delivery: 'A gummy bear.', category: 'Pun' },
+    { type: 'twopart', setup: 'Why did the bicycle fall over?', delivery: 'Because it was two-tired.', category: 'Pun' },
+  ];
+
+  async function fetchJoke() {
+    try {
+      const url = `https://v2.jokeapi.dev/joke/${encodeURIComponent(category)}?safe-mode`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('API error');
+      return await res.json();
+    } catch {
+      return fallbackJokes[Math.floor(Math.random() * fallbackJokes.length)];
+    }
+  }
+
+  async function showJoke() {
+    container.classList.remove('visible');
+
+    await new Promise(r => setTimeout(r, 1000));
+
+    const joke = await fetchJoke();
+    emojiEl.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    categoryEl.textContent = joke.category || '';
+
+    if (joke.type === 'twopart') {
+      jokeArea.innerHTML = `
+        <div class="setup">${escapeHtml(joke.setup)}</div>
+        <div class="punchline" id="punchline">${escapeHtml(joke.delivery)}</div>
+      `;
+      container.classList.add('visible');
+      setTimeout(() => {
+        document.getElementById('punchline')?.classList.add('visible');
+      }, revealDelay);
+    } else {
+      jokeArea.innerHTML = `<div class="single">${escapeHtml(joke.joke)}</div>`;
+      container.classList.add('visible');
+    }
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  showJoke();
+  setInterval(showJoke, interval);
+</script>
+</body>
+</html>
