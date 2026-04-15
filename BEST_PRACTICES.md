@@ -81,21 +81,29 @@ html, body {
 
 ## 5. Design for Readability Over Photos
 
-White text vanishes on light photos. Dark text vanishes on dark photos. Use text shadows to create a subtle halo that makes text readable on any image.
+White text vanishes on light photos. Dark text vanishes on dark photos. Use text shadows to create a crisp outline with an angled drop shadow — the same approach macOS uses for desktop icon labels.
 
 ```css
 .text {
   color: white;
-  text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+  text-shadow:
+    -1px 0 0 rgba(0,0,0,0.6),
+    1px 0 0 rgba(0,0,0,0.6),
+    0 -1px 0 rgba(0,0,0,0.6),
+    0 1px 0 rgba(0,0,0,0.6),
+    1px 2px 4px rgba(0,0,0,0.35);
 }
 ```
 
-For elements that need stronger contrast (small labels, thin fonts), increase the shadow spread:
+How it works:
+- The first four shadows (1px in each direction, zero blur) create a sharp dark outline around every letter
+- The last shadow (offset 1px right, 2px down, 4px blur) adds a subtle directional drop shadow for depth
+
+**Don't** use a single big blurry shadow — it looks soft and washes out at small sizes:
 
 ```css
-.small-label {
-  text-shadow: 0 1px 4px rgba(0,0,0,0.6), 0 0 12px rgba(0,0,0,0.3);
-}
+/* BAD — blurry halo, not crisp */
+text-shadow: 0 1px 8px rgba(0,0,0,0.5);
 ```
 
 ---
@@ -186,7 +194,12 @@ html, body {
   .content {
     text-align: center;
     color: var(--color);
-    text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+    text-shadow:
+      -1px 0 0 rgba(0,0,0,0.6),
+      1px 0 0 rgba(0,0,0,0.6),
+      0 -1px 0 rgba(0,0,0,0.6),
+      0 1px 0 rgba(0,0,0,0.6),
+      1px 2px 4px rgba(0,0,0,0.35);
     width: 100%;
   }
   .title {

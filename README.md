@@ -236,7 +236,12 @@ Want to make your own? Read **[BEST_PRACTICES.md](BEST_PRACTICES.md)** for the f
   .content {
     text-align: center;
     color: var(--color);
-    text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+    text-shadow:
+      -1px 0 0 rgba(0,0,0,0.6),
+      1px 0 0 rgba(0,0,0,0.6),
+      0 -1px 0 rgba(0,0,0,0.6),
+      0 1px 0 rgba(0,0,0,0.6),
+      1px 2px 4px rgba(0,0,0,0.35);
     width: 100%;
   }
   .title {
