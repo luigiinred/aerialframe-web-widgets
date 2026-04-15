@@ -17,7 +17,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 8%;
+    padding: 6px;
   }
   .quote-container {
     text-align: center;
@@ -25,16 +25,17 @@
     text-shadow: 0 1px 10px rgba(0,0,0,0.5);
     opacity: 0;
     transition: opacity 1.5s ease;
+    width: 100%;
   }
   .quote-container.visible { opacity: 1; }
   .quote-mark {
-    font-size: clamp(2rem, 8vw, 5rem);
+    font-size: min(8vw, 8vh, 5rem);
     opacity: 0.2;
     line-height: 0.5;
     font-family: Georgia, serif;
   }
   .quote-text {
-    font-size: clamp(0.9rem, 3.5vw, 2rem);
+    font-size: min(3.5vw, 5vh, 2rem);
     font-weight: 400;
     line-height: 1.5;
     font-style: italic;
@@ -42,7 +43,7 @@
     letter-spacing: 0.01em;
   }
   .quote-author {
-    font-size: clamp(0.6rem, 2vw, 1rem);
+    font-size: min(2vw, 2.5vh, 1rem);
     font-weight: 400;
     opacity: 0.6;
     font-style: normal;
@@ -121,7 +122,6 @@
     }, 1500);
   }
 
-  // Shuffle
   for (let i = quotes.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [quotes[i], quotes[j]] = [quotes[j], quotes[i]];

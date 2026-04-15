@@ -196,7 +196,7 @@ These widgets are hosted for free via [GitHub Pages](https://pages.github.com/).
 
 ## Creating Your Own Widgets
 
-Want to make your own? Here's a minimal template:
+Want to make your own? Read **[BEST_PRACTICES.md](BEST_PRACTICES.md)** for the full guide on sizing, padding, and layout. Here's the starter template:
 
 ```html
 <!DOCTYPE html>
@@ -210,35 +210,48 @@ Want to make your own? Here's a minimal template:
     width: 100%; height: 100%;
     background: transparent;
     overflow: hidden;
+    font-family: -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
   }
   body {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    padding: 4px;
+  }
+  .content {
+    text-align: center;
+    color: var(--color);
     text-shadow: 0 1px 8px rgba(0,0,0,0.5);
-    font-family: -apple-system, sans-serif;
+    width: 100%;
+  }
+  .title {
+    font-size: min(8vw, 8vh, 4rem);
+    font-weight: 300;
+    white-space: nowrap;
   }
 </style>
 </head>
 <body>
-  <div id="content">Your widget here</div>
-  <script>
-    // Read URL parameters
-    const params = new URLSearchParams(window.location.search);
-    const color = params.get('color') || '#ffffff';
-    // Your widget logic here
-  </script>
+<div class="content">
+  <div class="title" id="title">Widget</div>
+</div>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const color = params.get('color') || '#ffffff';
+  document.documentElement.style.setProperty('--color', color);
+</script>
 </body>
 </html>
 ```
 
-**Key rules:**
-- Set `background: transparent` on html and body
-- Use `text-shadow` for readability over photos
-- Use `clamp()` for responsive font sizes
-- Read configuration from URL parameters
-- Keep it self-contained (no external CSS/JS)
+**Key rules** (see [BEST_PRACTICES.md](BEST_PRACTICES.md) for details):
+- **Edge-to-edge** — Use `padding: 4px` (fixed), never percentage padding
+- **Size with `min()`** — `font-size: min(12vw, 10vh, 8rem)` scales with the smaller dimension
+- **Transparent background** — `background: transparent` on html and body
+- **Readable over photos** — `text-shadow` creates a halo for readability
+- **No wrapping** — `white-space: nowrap` on single-line text
+- **Self-contained** — No external CSS, JS, fonts, or APIs
 
 ---
 

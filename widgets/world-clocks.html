@@ -17,16 +17,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 5%;
+    padding: 4px;
   }
   .container {
     display: flex;
     flex-direction: column;
-    gap: clamp(0.4rem, 2.5vh, 1.2rem);
+    gap: min(2.5vh, 1.2rem);
     color: var(--color);
     text-shadow: 0 1px 8px rgba(0,0,0,0.5);
     width: 100%;
-    max-width: 500px;
   }
   .clock-row {
     display: flex;
@@ -42,20 +41,22 @@
     gap: 0.1em;
   }
   .city-name {
-    font-size: clamp(0.7rem, 2.5vw, 1.1rem);
+    font-size: min(2.5vw, 3vh, 1.1rem);
     font-weight: 500;
     letter-spacing: 0.02em;
+    white-space: nowrap;
   }
   .city-offset {
-    font-size: clamp(0.5rem, 1.5vw, 0.7rem);
+    font-size: min(1.5vw, 2vh, 0.7rem);
     opacity: 0.4;
     font-weight: 400;
   }
   .city-time {
-    font-size: clamp(1rem, 4vw, 2rem);
+    font-size: min(4vw, 5vh, 2rem);
     font-weight: 200;
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.02em;
+    white-space: nowrap;
   }
   .city-period {
     font-size: 0.5em;

@@ -17,16 +17,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 8%;
+    padding: 6px;
   }
   .container {
     text-align: center;
     color: var(--color);
     text-shadow: 0 1px 10px rgba(0,0,0,0.5);
+    width: 100%;
   }
   .breathe-ring {
-    width: clamp(40px, 10vw, 80px);
-    height: clamp(40px, 10vw, 80px);
+    width: min(10vw, 10vh, 80px);
+    height: min(10vw, 10vh, 80px);
     border-radius: 50%;
     border: 2px solid var(--color);
     opacity: 0.2;
@@ -38,7 +39,7 @@
     50% { transform: scale(1.2); opacity: 0.35; }
   }
   .affirmation {
-    font-size: clamp(1rem, 4vw, 2.4rem);
+    font-size: min(4vw, 5vh, 2.4rem);
     font-weight: 300;
     line-height: 1.4;
     letter-spacing: -0.01em;
@@ -47,7 +48,7 @@
   }
   .affirmation.visible { opacity: 1; }
   .category {
-    font-size: clamp(0.5rem, 1.5vw, 0.7rem);
+    font-size: min(1.5vw, 2vh, 0.7rem);
     font-weight: 600;
     opacity: 0.4;
     letter-spacing: 0.2em;

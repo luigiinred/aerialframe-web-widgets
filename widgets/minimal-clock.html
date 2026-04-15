@@ -17,17 +17,20 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 4px;
   }
   .container {
     text-align: center;
     color: var(--color);
     text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+    width: 100%;
   }
   .time {
-    font-size: clamp(2rem, 12vw, 8rem);
+    font-size: min(12vw, 10vh, 8rem);
     font-weight: 200;
     letter-spacing: -0.03em;
     line-height: 1.1;
+    white-space: nowrap;
   }
   .time .seconds {
     font-size: 0.35em;
@@ -36,12 +39,13 @@
     margin-left: 0.1em;
   }
   .date {
-    font-size: clamp(0.7rem, 3vw, 1.6rem);
+    font-size: min(3vw, 3vh, 1.6rem);
     font-weight: 400;
     opacity: 0.7;
     margin-top: 0.3em;
     letter-spacing: 0.05em;
     text-transform: uppercase;
+    white-space: nowrap;
   }
   .ampm {
     font-size: 0.3em;

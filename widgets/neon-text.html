@@ -17,13 +17,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 5%;
+    padding: 4px;
   }
   .neon-container {
     text-align: center;
+    width: 100%;
   }
   .neon-text {
-    font-size: clamp(1.5rem, 8vw, 5rem);
+    font-size: min(8vw, 10vh, 5rem);
     font-weight: 700;
     color: var(--glow);
     text-shadow:
@@ -36,9 +37,10 @@
     letter-spacing: 0.05em;
     animation: flicker 3s infinite alternate;
     line-height: 1.2;
+    white-space: nowrap;
   }
   .neon-subtitle {
-    font-size: clamp(0.6rem, 2vw, 1.2rem);
+    font-size: min(2vw, 3vh, 1.2rem);
     font-weight: 300;
     color: var(--glow);
     text-shadow:
@@ -48,6 +50,7 @@
     margin-top: 0.5em;
     letter-spacing: 0.2em;
     text-transform: uppercase;
+    white-space: nowrap;
   }
   @keyframes flicker {
     0%, 18%, 22%, 25%, 53%, 57%, 100% {
