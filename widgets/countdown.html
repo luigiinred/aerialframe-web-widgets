@@ -31,14 +31,14 @@
     opacity: 0.7;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    margin-bottom: 0.8em;
+    margin-bottom: 0.3em;
     white-space: nowrap;
   }
   .countdown {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: min(3vw, 3vh, 2rem);
+    gap: min(2vw, 2vh, 1.5rem);
   }
   .unit {
     display: flex;
@@ -46,43 +46,30 @@
     align-items: center;
   }
   .value {
-    font-size: min(10vw, 12vh, 6rem);
+    font-size: min(14vw, 16vh, 6rem);
     font-weight: 100;
-    line-height: 1.1;
+    line-height: 1;
     letter-spacing: -0.03em;
     font-variant-numeric: tabular-nums;
   }
   .label {
-    font-size: min(1.5vw, 1.5vh, 0.8rem);
+    font-size: min(1.8vw, 2vh, 0.8rem);
     font-weight: 500;
     opacity: 0.5;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    margin-top: 0.4em;
+    margin-top: 0.2em;
   }
   .separator {
-    font-size: min(6vw, 8vh, 4rem);
+    font-size: min(8vw, 10vh, 4rem);
     font-weight: 100;
     opacity: 0.2;
-    margin-top: -0.3em;
+    line-height: 1;
   }
   .complete {
-    font-size: min(6vw, 8vh, 3rem);
+    font-size: min(10vw, 12vh, 3rem);
     font-weight: 300;
     opacity: 0.9;
-  }
-  .progress-ring {
-    width: min(15vw, 15vh, 120px);
-    height: min(15vw, 15vh, 120px);
-    margin: 1.5em auto 0;
-  }
-  .progress-bg { stroke: var(--color); opacity: 0.1; }
-  .progress-fg {
-    stroke: var(--accent);
-    opacity: 0.8;
-    transition: stroke-dashoffset 1s linear;
-    transform: rotate(-90deg);
-    transform-origin: center;
   }
 </style>
 </head>
@@ -90,33 +77,20 @@
 <div class="container">
   <div class="title" id="title"></div>
   <div id="countdown-area"></div>
-  <div class="progress-ring" id="ring-container">
-    <svg viewBox="0 0 100 100" id="ring">
-      <circle class="progress-bg" cx="50" cy="50" r="45" fill="none" stroke-width="2"/>
-      <circle class="progress-fg" id="progress" cx="50" cy="50" r="45" fill="none" stroke-width="2"
-              stroke-dasharray="283" stroke-dashoffset="0" stroke-linecap="round"/>
-    </svg>
-  </div>
 </div>
 <script>
   const params = new URLSearchParams(window.location.search);
   const targetDate = params.get('date') || '2025-12-31T00:00:00';
   const title = params.get('title') || '';
   const color = params.get('color') || '#ffffff';
-  const accent = params.get('accent') || '#64b5f6';
-  const showRing = params.get('ring') !== 'false';
 
   document.documentElement.style.setProperty('--color', color);
-  document.documentElement.style.setProperty('--accent', accent);
 
   const titleEl = document.getElementById('title');
   titleEl.textContent = title;
   if (!title) titleEl.style.display = 'none';
-  if (!showRing) document.getElementById('ring-container').style.display = 'none';
 
   const target = new Date(targetDate).getTime();
-  const start = Date.now();
-  const totalDuration = target - start;
 
   function update() {
     const now = Date.now();
@@ -145,13 +119,6 @@
     html += `<div class="unit"><div class="value">${String(secs).padStart(2,'0')}</div><div class="label">Sec</div></div>`;
     html += '</div>';
     area.innerHTML = html;
-
-    if (showRing && totalDuration > 0) {
-      const elapsed = now - start;
-      const pct = Math.min(elapsed / totalDuration, 1);
-      const offset = 283 * (1 - pct);
-      document.getElementById('progress').setAttribute('stroke-dashoffset', offset);
-    }
   }
 
   update();
