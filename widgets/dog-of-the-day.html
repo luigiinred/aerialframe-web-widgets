@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dog of the Day</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: transparent;
+    overflow: hidden;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+  .dog-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 1.5s ease;
+    border-radius: 4px;
+  }
+  .dog-img.visible { opacity: 1; }
+  .breed-label {
+    position: absolute;
+    bottom: 6px;
+    left: 6px;
+    right: 6px;
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+    font-size: min(2.5vw, 3vh, 0.85rem);
+    font-weight: 600;
+    color: var(--color);
+    text-shadow:
+      -1px 0 0 rgba(0,0,0,0.6),
+      1px 0 0 rgba(0,0,0,0.6),
+      0 -1px 0 rgba(0,0,0,0.6),
+      0 1px 0 rgba(0,0,0,0.6),
+      1px 2px 4px rgba(0,0,0,0.35);
+    letter-spacing: 0.1em;
+    text-transform: capitalize;
+    padding: 0.4em;
+    background: linear-gradient(transparent, rgba(0,0,0,0.4));
+    border-radius: 0 0 4px 4px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <img class="dog-img" id="dog" alt="Dog">
+  <div class="breed-label" id="breed"></div>
+</div>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const color = params.get('color') || '#ffffff';
+  const breed = params.get('breed') || '';
+  const interval = parseInt(params.get('interval') || '30') * 1000;
+
+  document.documentElement.style.setProperty('--color', color);
+
+  const imgEl = document.getElementById('dog');
+  const breedEl = document.getElementById('breed');
+
+  function extractBreed(url) {
+    const match = url.match(/breeds\/([^/]+)/);
+    if (!match) return '';
+    return match[1].replace('-', ' ');
+  }
+
+  async function show() {
+    imgEl.classList.remove('visible');
+    await new Promise(r => setTimeout(r, 1500));
+
+    try {
+      const url = breed
+        ? `https://dog.ceo/api/breed/${breed}/images/random`
+        : 'https://dog.ceo/api/breeds/image/random';
+      const res = await fetch(url);
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      imgEl.src = data.message;
+      breedEl.textContent = extractBreed(data.message);
+      imgEl.onload = () => imgEl.classList.add('visible');
+    } catch {
+      breedEl.textContent = '';
+    }
+  }
+
+  show();
+  setInterval(show, interval);
+</script>
+</body>
+</html>

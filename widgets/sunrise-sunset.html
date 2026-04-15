@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sunrise & Sunset</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+  }
+  .container {
+    text-align: center;
+    color: var(--color);
+    text-shadow:
+      -1px 0 0 rgba(0,0,0,0.6),
+      1px 0 0 rgba(0,0,0,0.6),
+      0 -1px 0 rgba(0,0,0,0.6),
+      0 1px 0 rgba(0,0,0,0.6),
+      1px 2px 4px rgba(0,0,0,0.35);
+    width: 100%;
+  }
+  .sun-arc {
+    width: min(60vw, 40vh, 240px);
+    height: min(30vw, 20vh, 120px);
+    margin: 0 auto 0.6em;
+    position: relative;
+  }
+  .sun-arc svg { width: 100%; height: 100%; overflow: visible; }
+  .arc-path { stroke: rgba(255,255,255,0.1); fill: none; stroke-width: 2; }
+  .arc-progress { fill: none; stroke-width: 2; stroke-linecap: round; }
+  .sun-dot { filter: drop-shadow(0 0 6px var(--sun-color)); }
+  .horizon { stroke: rgba(255,255,255,0.15); stroke-width: 1; }
+  .times {
+    display: flex;
+    justify-content: center;
+    gap: min(6vw, 6vh, 3rem);
+    margin-top: 0.3em;
+  }
+  .time-block {
+    text-align: center;
+  }
+  .time-icon {
+    font-size: min(5vw, 5vh, 1.8rem);
+    text-shadow: none;
+    margin-bottom: 0.1em;
+  }
+  .time-value {
+    font-size: min(4vw, 4.5vh, 1.5rem);
+    font-weight: 300;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .time-label {
+    font-size: min(1.5vw, 2vh, 0.6rem);
+    opacity: 0.4;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 0.2em;
+  }
+  .daylight {
+    font-size: min(1.8vw, 2.2vh, 0.7rem);
+    opacity: 0.35;
+    margin-top: 0.8em;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="sun-arc">
+    <svg viewBox="0 0 200 110" id="arc-svg">
+      <line class="horizon" x1="10" y1="100" x2="190" y2="100"/>
+      <path class="arc-path" d="M 10 100 A 90 90 0 0 1 190 100"/>
+      <path class="arc-progress" id="arc-progress" d="" stroke="url(#sunGrad)" stroke-width="2"/>
+      <defs>
+        <linearGradient id="sunGrad" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0%" stop-color="#ff9800"/>
+          <stop offset="100%" stop-color="#ffeb3b"/>
+        </linearGradient>
+      </defs>
+      <circle class="sun-dot" id="sun-dot" cx="10" cy="100" r="5" fill="#ffeb3b"/>
+    </svg>
+  </div>
+  <div class="times">
+    <div class="time-block">
+      <div class="time-icon">🌅</div>
+      <div class="time-value" id="sunrise">—</div>
+      <div class="time-label">Sunrise</div>
+    </div>
+    <div class="time-block">
+      <div class="time-icon">🌇</div>
+      <div class="time-value" id="sunset">—</div>
+      <div class="time-label">Sunset</div>
+    </div>
+  </div>
+  <div class="daylight" id="daylight"></div>
+</div>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const color = params.get('color') || '#ffffff';
+  const lat = params.get('lat') || '40.7128';
+  const lng = params.get('lng') || '-74.0060';
+
+  document.documentElement.style.setProperty('--color', color);
+  document.documentElement.style.setProperty('--sun-color', '#ffeb3b');
+
+  function formatTime(iso) {
+    const d = new Date(iso);
+    return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  }
+
+  function arcPoint(fraction) {
+    const angle = Math.PI * (1 - fraction);
+    const cx = 100, cy = 100, r = 90;
+    return {
+      x: cx + r * Math.cos(angle),
+      y: cy - r * Math.sin(angle),
+    };
+  }
+
+  async function load() {
+    try {
+      const res = await fetch(
+        `https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lng}&formatted=0`
+      );
+      const data = (await res.json()).results;
+
+      const sunrise = new Date(data.sunrise);
+      const sunset = new Date(data.sunset);
+      const now = new Date();
+
+      document.getElementById('sunrise').textContent = formatTime(data.sunrise);
+      document.getElementById('sunset').textContent = formatTime(data.sunset);
+
+      const daylightMs = sunset - sunrise;
+      const hours = Math.floor(daylightMs / 3600000);
+      const mins = Math.floor((daylightMs % 3600000) / 60000);
+      document.getElementById('daylight').textContent = `${hours}h ${mins}m of daylight`;
+
+      const elapsed = now - sunrise;
+      const fraction = Math.max(0, Math.min(1, elapsed / daylightMs));
+
+      const sunPos = arcPoint(fraction);
+      document.getElementById('sun-dot').setAttribute('cx', sunPos.x);
+      document.getElementById('sun-dot').setAttribute('cy', sunPos.y);
+
+      // Draw partial arc
+      const steps = Math.floor(fraction * 50);
+      let d = '';
+      for (let i = 0; i <= steps; i++) {
+        const f = i / 50;
+        const p = arcPoint(f);
+        d += (i === 0 ? 'M' : 'L') + `${p.x} ${p.y} `;
+      }
+      document.getElementById('arc-progress').setAttribute('d', d);
+
+    } catch {
+      document.getElementById('sunrise').textContent = '—';
+      document.getElementById('sunset').textContent = '—';
+    }
+  }
+
+  load();
+  setInterval(load, 60000);
+</script>
+</body>
+</html>

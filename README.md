@@ -1,6 +1,6 @@
 # AerialFrame Web Widgets
 
-A collection of 12 beautiful web widgets designed to be embedded in [AerialFrame](https://aerialframe.app)'s WebView widget. Each widget is a single HTML file — just copy the URL and paste it into your widget settings.
+A collection of 22 web widgets designed to be embedded in [AerialFrame](https://aerialframe.app)'s WebView widget. Each widget is a single HTML file — just copy the URL and paste it into your widget settings.
 
 **[Browse the gallery →](https://luigiinred.github.io/aerialframe-web-widgets/)**
 
@@ -31,6 +31,16 @@ A collection of 12 beautiful web widgets designed to be embedded in [AerialFrame
 | **Neon Text** | Glowing neon sign with custom text | `widgets/neon-text.html` |
 | **Now Playing** | Decorative now-playing with disc and equalizer | `widgets/now-playing.html` |
 | **Joke of the Day** | Random jokes from JokeAPI with punchline reveal | `widgets/joke.html` |
+| **Random Facts** | Rotating "did you know?" facts | `widgets/random-facts.html` |
+| **ISS Tracker** | Live ISS position on a mini world map | `widgets/iss-tracker.html` |
+| **People in Space** | Who is currently in orbit, by spacecraft | `widgets/people-in-space.html` |
+| **Trivia Questions** | Trivia with delayed answer reveal | `widgets/trivia.html` |
+| **Daily Advice** | Random life advice from Advice Slip API | `widgets/daily-advice.html` |
+| **Dog of the Day** | Random dog photos, filterable by breed | `widgets/dog-of-the-day.html` |
+| **Hacker News** | Top headlines with scores and timestamps | `widgets/hacker-news.html` |
+| **Sunrise & Sunset** | Today's sun times with a visual arc | `widgets/sunrise-sunset.html` |
+| **Currency Exchange** | Live exchange rates from ECB | `widgets/currency.html` |
+| **Cat Facts** | Random cat facts on a timer | `widgets/cat-facts.html` |
 
 **Base URL:** `https://luigiinred.github.io/aerialframe-web-widgets/`
 
@@ -184,6 +194,113 @@ Uses [JokeAPI](https://v2.jokeapi.dev/) (free, no auth). Two-part jokes show the
 | `reveal` | `3` | Seconds before punchline appears (two-part jokes) |
 
 **Example:** `?category=Programming&interval=45&reveal=5`
+
+### Random Facts
+
+Uses [Useless Facts API](https://uselessfacts.jsph.pl/) (free, no auth). Falls back to built-in facts offline.
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `color` | `#ffffff` | Text color |
+| `interval` | `30` | Seconds between facts |
+
+### ISS Tracker
+
+Uses [Open Notify API](http://open-notify.org/) (free, no auth). Shows the live ISS position on a simplified world map.
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `color` | `#ffffff` | Text color |
+| `accent` | `#4fc3f7` | ISS dot and ping color |
+
+### People in Space
+
+Uses [Open Notify API](http://open-notify.org/) (free, no auth). Shows astronauts grouped by spacecraft.
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `color` | `#ffffff` | Text color |
+
+### Trivia Questions
+
+Uses [Open Trivia DB](https://opentdb.com/) (free, no auth). Shows a question, then reveals the answer after a delay.
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `color` | `#ffffff` | Text color |
+| `accent` | `#81c784` | Answer text color |
+| `interval` | `30` | Seconds between questions |
+| `reveal` | `5` | Seconds before answer appears |
+| `category` | *(any)* | Category ID ([see list](https://opentdb.com/api_category.php)) |
+
+**Example:** `?category=18&interval=20` (Computer Science trivia)
+
+### Daily Advice
+
+Uses [Advice Slip API](https://api.adviceslip.com/) (free, no auth). Falls back to built-in advice offline.
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `color` | `#ffffff` | Text color |
+| `interval` | `45` | Seconds between advice |
+
+### Dog of the Day
+
+Uses [Dog CEO API](https://dog.ceo/dog-api/) (free, no auth). Shows a random dog photo that fills the widget.
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `color` | `#ffffff` | Breed label color |
+| `breed` | *(random)* | Filter by breed (e.g. `labrador`, `poodle/standard`) |
+| `interval` | `30` | Seconds between photos |
+
+**Example:** `?breed=corgi&interval=20`
+
+### Hacker News
+
+Uses [Hacker News API](https://github.com/HackerNews/API) (free, no auth, no limits).
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `color` | `#ffffff` | Text color |
+| `accent` | `#ff6600` | Y logo color |
+| `count` | `5` | Number of headlines |
+| `feed` | `top` | Feed type: `top`, `new`, or `best` |
+
+**Example:** `?feed=best&count=3`
+
+### Sunrise & Sunset
+
+Uses [Sunrise-Sunset API](https://sunrise-sunset.org/api) (free, no auth). Shows a sun arc with current position.
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `color` | `#ffffff` | Text color |
+| `lat` | `40.7128` | Latitude |
+| `lng` | `-74.0060` | Longitude |
+
+**Example:** `?lat=34.0522&lng=-118.2437` (Los Angeles)
+
+### Currency Exchange
+
+Uses [Frankfurter API](https://frankfurter.dev/) (free, no auth, ECB data).
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `color` | `#ffffff` | Text color |
+| `base` | `USD` | Base currency code |
+| `symbols` | `EUR,GBP,JPY,CAD` | Comma-separated target currencies |
+
+**Example:** `?base=EUR&symbols=USD,GBP,CHF,SEK`
+
+### Cat Facts
+
+Uses [Cat Facts API](https://catfact.ninja/) (free, no auth). Falls back to built-in facts offline.
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `color` | `#ffffff` | Text color |
+| `interval` | `30` | Seconds between facts |
 
 ---
 

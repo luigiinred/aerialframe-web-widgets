@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Random Facts</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+  }
+  .container {
+    text-align: center;
+    color: var(--color);
+    text-shadow:
+      -1px 0 0 rgba(0,0,0,0.6),
+      1px 0 0 rgba(0,0,0,0.6),
+      0 -1px 0 rgba(0,0,0,0.6),
+      0 1px 0 rgba(0,0,0,0.6),
+      1px 2px 4px rgba(0,0,0,0.35);
+    width: 100%;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+  }
+  .container.visible { opacity: 1; }
+  .label {
+    font-size: min(1.5vw, 2vh, 0.65rem);
+    font-weight: 600;
+    opacity: 0.4;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1em;
+  }
+  .fact {
+    font-size: min(3.5vw, 4.5vh, 1.6rem);
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  .source {
+    font-size: min(1.5vw, 2vh, 0.6rem);
+    opacity: 0.25;
+    margin-top: 1.2em;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+<div class="container" id="container">
+  <div class="label">Did You Know?</div>
+  <div class="fact" id="fact"></div>
+  <div class="source" id="source"></div>
+</div>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const color = params.get('color') || '#ffffff';
+  const interval = parseInt(params.get('interval') || '30') * 1000;
+
+  document.documentElement.style.setProperty('--color', color);
+
+  const container = document.getElementById('container');
+  const factEl = document.getElementById('fact');
+  const sourceEl = document.getElementById('source');
+
+  const fallbacks = [
+    "Honey never spoils. Archaeologists have found 3,000-year-old honey in Egyptian tombs that was still edible.",
+    "Octopuses have three hearts and blue blood.",
+    "A group of flamingos is called a 'flamboyance.'",
+    "Bananas are berries, but strawberries aren't.",
+    "The shortest war in history lasted 38 minutes, between Britain and Zanzibar.",
+    "A day on Venus is longer than a year on Venus.",
+    "There are more possible iterations of a game of chess than atoms in the observable universe.",
+  ];
+
+  async function fetchFact() {
+    try {
+      const res = await fetch('https://uselessfacts.jsph.pl/random.json?language=en');
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      return { text: data.text, source: data.source || '' };
+    } catch {
+      const text = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+      return { text, source: '' };
+    }
+  }
+
+  async function show() {
+    container.classList.remove('visible');
+    await new Promise(r => setTimeout(r, 1200));
+    const fact = await fetchFact();
+    factEl.textContent = fact.text;
+    sourceEl.textContent = fact.source;
+    container.classList.add('visible');
+  }
+
+  show();
+  setInterval(show, interval);
+</script>
+</body>
+</html>

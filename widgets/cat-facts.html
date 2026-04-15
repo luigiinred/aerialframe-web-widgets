@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cat Facts</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+  }
+  .container {
+    text-align: center;
+    color: var(--color);
+    text-shadow:
+      -1px 0 0 rgba(0,0,0,0.6),
+      1px 0 0 rgba(0,0,0,0.6),
+      0 -1px 0 rgba(0,0,0,0.6),
+      0 1px 0 rgba(0,0,0,0.6),
+      1px 2px 4px rgba(0,0,0,0.35);
+    width: 100%;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+  }
+  .container.visible { opacity: 1; }
+  .icon {
+    font-size: min(8vw, 8vh, 3rem);
+    text-shadow: none;
+    margin-bottom: 0.3em;
+  }
+  .fact {
+    font-size: min(3.5vw, 4.5vh, 1.6rem);
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  .label {
+    font-size: min(1.5vw, 2vh, 0.65rem);
+    font-weight: 600;
+    opacity: 0.3;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 1.2em;
+  }
+</style>
+</head>
+<body>
+<div class="container" id="container">
+  <div class="icon">🐱</div>
+  <div class="fact" id="fact"></div>
+  <div class="label">Cat Fact</div>
+</div>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const color = params.get('color') || '#ffffff';
+  const interval = parseInt(params.get('interval') || '30') * 1000;
+
+  document.documentElement.style.setProperty('--color', color);
+
+  const container = document.getElementById('container');
+  const factEl = document.getElementById('fact');
+
+  const fallbacks = [
+    "Cats spend 70% of their lives sleeping.",
+    "A group of cats is called a 'clowder.'",
+    "Cats have over 20 vocalizations, including the purr.",
+    "A cat's purr vibrates at 25-150 Hz, a frequency that promotes healing.",
+    "Cats can rotate their ears 180 degrees.",
+    "A cat has 230 bones — more than a human.",
+    "Cats can jump up to six times their length.",
+  ];
+
+  async function fetchFact() {
+    try {
+      const res = await fetch('https://catfact.ninja/fact');
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      return data.fact;
+    } catch {
+      return fallbacks[Math.floor(Math.random() * fallbacks.length)];
+    }
+  }
+
+  async function show() {
+    container.classList.remove('visible');
+    await new Promise(r => setTimeout(r, 1200));
+    factEl.textContent = await fetchFact();
+    container.classList.add('visible');
+  }
+
+  show();
+  setInterval(show, interval);
+</script>
+</body>
+</html>

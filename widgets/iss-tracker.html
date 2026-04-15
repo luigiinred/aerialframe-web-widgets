@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ISS Tracker</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+  }
+  .container {
+    text-align: center;
+    color: var(--color);
+    text-shadow:
+      -1px 0 0 rgba(0,0,0,0.6),
+      1px 0 0 rgba(0,0,0,0.6),
+      0 -1px 0 rgba(0,0,0,0.6),
+      0 1px 0 rgba(0,0,0,0.6),
+      1px 2px 4px rgba(0,0,0,0.35);
+    width: 100%;
+  }
+  .label {
+    font-size: min(1.5vw, 2vh, 0.65rem);
+    font-weight: 600;
+    opacity: 0.4;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.6em;
+  }
+  .map-wrap {
+    width: 100%;
+    max-width: min(90vw, 70vh);
+    margin: 0 auto;
+    position: relative;
+  }
+  .map-wrap svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .land { fill: rgba(255,255,255,0.12); stroke: rgba(255,255,255,0.08); stroke-width: 0.3; }
+  .grid-line { stroke: rgba(255,255,255,0.04); stroke-width: 0.2; fill: none; }
+  .iss-dot {
+    fill: var(--accent);
+    filter: drop-shadow(0 0 4px var(--accent));
+  }
+  .iss-ring {
+    fill: none;
+    stroke: var(--accent);
+    opacity: 0.4;
+    animation: ping 2s ease-out infinite;
+  }
+  @keyframes ping {
+    0% { r: 3; opacity: 0.6; }
+    100% { r: 10; opacity: 0; }
+  }
+  .coords {
+    font-size: min(2.5vw, 3vh, 1rem);
+    font-weight: 300;
+    font-variant-numeric: tabular-nums;
+    margin-top: 0.5em;
+    white-space: nowrap;
+  }
+  .speed {
+    font-size: min(1.5vw, 2vh, 0.65rem);
+    opacity: 0.35;
+    margin-top: 0.3em;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="label">🛰 International Space Station</div>
+  <div class="map-wrap">
+    <svg viewBox="0 0 360 180" id="map">
+      <rect width="360" height="180" fill="none"/>
+      <line class="grid-line" x1="0" y1="90" x2="360" y2="90"/>
+      <line class="grid-line" x1="180" y1="0" x2="180" y2="180"/>
+      <line class="grid-line" x1="0" y1="45" x2="360" y2="45"/>
+      <line class="grid-line" x1="0" y1="135" x2="360" y2="135"/>
+      <line class="grid-line" x1="90" y1="0" x2="90" y2="180"/>
+      <line class="grid-line" x1="270" y1="0" x2="270" y2="180"/>
+      <!-- simplified world outline -->
+      <g class="land" id="land"></g>
+      <circle class="iss-ring" id="iss-ring" cx="180" cy="90" r="3"/>
+      <circle class="iss-dot" id="iss-dot" cx="180" cy="90" r="3"/>
+    </svg>
+  </div>
+  <div class="coords" id="coords">—</div>
+  <div class="speed">~28,000 km/h • ~420 km altitude</div>
+</div>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const color = params.get('color') || '#ffffff';
+  const accent = params.get('accent') || '#4fc3f7';
+  document.documentElement.style.setProperty('--color', color);
+  document.documentElement.style.setProperty('--accent', accent);
+
+  // Simplified continent outlines as rectangles for the mini map
+  const continents = [
+    // North America
+    'M60,25 L60,55 L75,60 L95,55 L110,45 L115,35 L105,20 L85,18 L65,20Z',
+    // South America
+    'M90,65 L80,75 L78,95 L82,115 L90,130 L100,125 L105,105 L100,85 L95,70Z',
+    // Europe
+    'M165,22 L160,35 L170,42 L185,40 L190,30 L180,22Z',
+    // Africa
+    'M160,50 L150,65 L155,90 L165,110 L180,105 L185,80 L180,60 L170,50Z',
+    // Asia
+    'M190,15 L185,35 L200,45 L220,50 L250,45 L270,30 L260,15 L230,10 L200,12Z',
+    // Australia
+    'M250,95 L245,110 L255,120 L275,115 L280,100 L270,92Z',
+  ];
+
+  const landG = document.getElementById('land');
+  continents.forEach(d => {
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', d);
+    landG.appendChild(path);
+  });
+
+  const dot = document.getElementById('iss-dot');
+  const ring = document.getElementById('iss-ring');
+  const coordsEl = document.getElementById('coords');
+
+  async function update() {
+    try {
+      const res = await fetch('http://api.open-notify.org/iss-now.json');
+      const data = await res.json();
+      const lat = parseFloat(data.iss_position.latitude);
+      const lon = parseFloat(data.iss_position.longitude);
+
+      const x = (lon + 180);
+      const y = (90 - lat);
+
+      dot.setAttribute('cx', x);
+      dot.setAttribute('cy', y);
+      ring.setAttribute('cx', x);
+      ring.setAttribute('cy', y);
+
+      const latDir = lat >= 0 ? 'N' : 'S';
+      const lonDir = lon >= 0 ? 'E' : 'W';
+      coordsEl.textContent = `${Math.abs(lat).toFixed(2)}° ${latDir}  ${Math.abs(lon).toFixed(2)}° ${lonDir}`;
+    } catch {
+      coordsEl.textContent = 'Signal lost…';
+    }
+  }
+
+  update();
+  setInterval(update, 5000);
+</script>
+</body>
+</html>

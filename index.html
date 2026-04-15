@@ -287,6 +287,7 @@
         { name: 'Analog Clock', emoji: '🕰️', desc: 'SVG analog clock with smooth second hand, customizable colors, and tick marks.', file: 'analog-clock.html', params: '' },
         { name: 'Countdown Timer', emoji: '⏳', desc: 'Count down to any date with days, hours, minutes, and seconds.', file: 'countdown.html', params: '?date=2026-01-01T00:00:00&title=New%20Year' },
         { name: 'World Clocks', emoji: '🌍', desc: 'Multiple cities with day/night indicators and UTC offsets.', file: 'world-clocks.html', params: '' },
+        { name: 'Sunrise & Sunset', emoji: '🌅', desc: 'Today\'s sunrise and sunset times with a sun arc showing current position.', file: 'sunrise-sunset.html', params: '' },
       ],
     },
     {
@@ -295,7 +296,8 @@
       widgets: [
         { name: 'Inspirational Quotes', emoji: '💬', desc: '25 rotating quotes with elegant serif typography and smooth crossfade.', file: 'quotes.html', params: '' },
         { name: 'Daily Affirmations', emoji: '✨', desc: 'Rotating positive affirmations with a breathing animation.', file: 'affirmations.html', params: '' },
-        { name: 'Neon Text', emoji: '💡', desc: 'Customizable neon sign effect with glow and optional flicker. 9 color presets.', file: 'neon-text.html', params: '?text=Hello&preset=pink' },
+        { name: 'Daily Advice', emoji: '💡', desc: 'Random life advice from the Advice Slip API. Fresh content every time.', file: 'daily-advice.html', params: '' },
+        { name: 'Neon Text', emoji: '🔆', desc: 'Customizable neon sign effect with glow and optional flicker. 9 color presets.', file: 'neon-text.html', params: '?text=Hello&preset=pink' },
       ],
     },
     {
@@ -305,13 +307,27 @@
         { name: 'Gradient Orb', emoji: '🔮', desc: 'Mesmerizing animated gradient orbs with 8 color presets.', file: 'gradient-orb.html', params: '?preset=aurora' },
         { name: 'Floating Particles', emoji: '✦', desc: 'Animated particle field with connecting lines. Configurable count, speed, and size.', file: 'particles.html', params: '' },
         { name: 'Moon Phase', emoji: '🌙', desc: 'Real-time moon phase with SVG illustration, phase name, and illumination.', file: 'moon-phase.html', params: '' },
+        { name: 'Dog of the Day', emoji: '🐕', desc: 'Random dog photos from the Dog CEO API. Filter by breed.', file: 'dog-of-the-day.html', params: '' },
       ],
     },
     {
       name: 'Live Data',
       icon: '📡',
       widgets: [
-        { name: 'Joke of the Day', emoji: '😂', desc: 'Random jokes from JokeAPI with a delayed punchline reveal. Filter by category.', file: 'joke.html', params: '' },
+        { name: 'Joke of the Day', emoji: '😂', desc: 'Random jokes from JokeAPI with a delayed punchline reveal.', file: 'joke.html', params: '' },
+        { name: 'Random Facts', emoji: '🧠', desc: 'Rotating "did you know?" facts from the Useless Facts API.', file: 'random-facts.html', params: '' },
+        { name: 'Trivia Questions', emoji: '❓', desc: 'Trivia with delayed answer reveal. Multiple categories available.', file: 'trivia.html', params: '' },
+        { name: 'Cat Facts', emoji: '🐱', desc: 'Random cat facts that rotate on a timer.', file: 'cat-facts.html', params: '' },
+        { name: 'Hacker News', emoji: '📰', desc: 'Top headlines from Hacker News with scores and timestamps.', file: 'hacker-news.html', params: '' },
+        { name: 'Currency Exchange', emoji: '💱', desc: 'Live exchange rates from the ECB via Frankfurter API.', file: 'currency.html', params: '' },
+      ],
+    },
+    {
+      name: 'Space',
+      icon: '🚀',
+      widgets: [
+        { name: 'ISS Tracker', emoji: '🛰️', desc: 'Live position of the International Space Station on a mini world map.', file: 'iss-tracker.html', params: '' },
+        { name: 'People in Space', emoji: '👨‍🚀', desc: 'Who is currently in space, grouped by spacecraft.', file: 'people-in-space.html', params: '' },
       ],
     },
     {

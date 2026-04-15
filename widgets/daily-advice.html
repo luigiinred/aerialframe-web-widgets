@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Advice</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+  }
+  .container {
+    text-align: center;
+    color: var(--color);
+    text-shadow:
+      -1px 0 0 rgba(0,0,0,0.6),
+      1px 0 0 rgba(0,0,0,0.6),
+      0 -1px 0 rgba(0,0,0,0.6),
+      0 1px 0 rgba(0,0,0,0.6),
+      1px 2px 4px rgba(0,0,0,0.35);
+    width: 100%;
+    opacity: 0;
+    transition: opacity 1.5s ease;
+  }
+  .container.visible { opacity: 1; }
+  .icon {
+    font-size: min(6vw, 6vh, 2.5rem);
+    margin-bottom: 0.4em;
+    text-shadow: none;
+  }
+  .advice {
+    font-size: min(4vw, 5vh, 1.8rem);
+    font-weight: 300;
+    line-height: 1.5;
+    font-style: italic;
+  }
+  .label {
+    font-size: min(1.5vw, 2vh, 0.65rem);
+    font-weight: 600;
+    opacity: 0.3;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 1.2em;
+  }
+</style>
+</head>
+<body>
+<div class="container" id="container">
+  <div class="icon">💡</div>
+  <div class="advice" id="advice"></div>
+  <div class="label">Advice of the Moment</div>
+</div>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const color = params.get('color') || '#ffffff';
+  const interval = parseInt(params.get('interval') || '45') * 1000;
+
+  document.documentElement.style.setProperty('--color', color);
+
+  const container = document.getElementById('container');
+  const adviceEl = document.getElementById('advice');
+
+  const fallbacks = [
+    "Remember that every expert was once a beginner.",
+    "Take a walk. It does wonders for the mind.",
+    "Don't compare your behind-the-scenes with someone else's highlight reel.",
+    "Drink more water than you think you need.",
+    "Sleep on it before making a big decision.",
+    "The best time to start was yesterday. The next best time is now.",
+  ];
+
+  async function fetchAdvice() {
+    try {
+      const res = await fetch('https://api.adviceslip.com/advice', { cache: 'no-store' });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      return data.slip.advice;
+    } catch {
+      return fallbacks[Math.floor(Math.random() * fallbacks.length)];
+    }
+  }
+
+  async function show() {
+    container.classList.remove('visible');
+    await new Promise(r => setTimeout(r, 1500));
+    adviceEl.textContent = await fetchAdvice();
+    container.classList.add('visible');
+  }
+
+  show();
+  setInterval(show, interval);
+</script>
+</body>
+</html>
