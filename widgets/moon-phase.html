@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moon Phase</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5%;
+  }
+  .container {
+    text-align: center;
+    color: var(--color);
+    text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+  }
+  .moon-wrap {
+    width: min(50vw, 50vh, 200px);
+    height: min(50vw, 50vh, 200px);
+    margin: 0 auto;
+    filter: drop-shadow(0 0 20px rgba(255,255,220,0.15));
+  }
+  svg { width: 100%; height: 100%; }
+  .moon-base { fill: #e8e0d0; }
+  .moon-shadow { fill: rgba(0,0,0,0.85); }
+  .crater {
+    fill: rgba(0,0,0,0.08);
+  }
+  .phase-name {
+    font-size: clamp(0.8rem, 3vw, 1.3rem);
+    font-weight: 500;
+    margin-top: 0.8em;
+    letter-spacing: 0.02em;
+  }
+  .illumination {
+    font-size: clamp(0.6rem, 2vw, 0.9rem);
+    font-weight: 400;
+    opacity: 0.5;
+    margin-top: 0.3em;
+  }
+  .date-info {
+    font-size: clamp(0.5rem, 1.5vw, 0.7rem);
+    font-weight: 400;
+    opacity: 0.35;
+    margin-top: 0.6em;
+    letter-spacing: 0.05em;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="moon-wrap">
+    <svg viewBox="0 0 200 200" id="moon-svg">
+      <defs>
+        <clipPath id="moon-clip">
+          <circle cx="100" cy="100" r="90"/>
+        </clipPath>
+      </defs>
+      <circle class="moon-base" cx="100" cy="100" r="90"/>
+      <circle class="crater" cx="65" cy="55" r="12"/>
+      <circle class="crater" cx="120" cy="80" r="8"/>
+      <circle class="crater" cx="85" cy="130" r="15"/>
+      <circle class="crater" cx="140" cy="120" r="6"/>
+      <circle class="crater" cx="60" cy="100" r="5"/>
+      <circle class="crater" cx="110" cy="45" r="4"/>
+      <circle class="crater" cx="130" cy="150" r="9"/>
+      <path id="shadow" class="moon-shadow" clip-path="url(#moon-clip)"/>
+    </svg>
+  </div>
+  <div class="phase-name" id="phase-name"></div>
+  <div class="illumination" id="illumination"></div>
+  <div class="date-info" id="date-info"></div>
+</div>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const color = params.get('color') || '#ffffff';
+  document.documentElement.style.setProperty('--color', color);
+
+  function getMoonPhase(date) {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+
+    let c = 0, e = 0, jd = 0, b = 0;
+    if (month < 3) {
+      c = 365.25 * (year - 1);
+      e = 30.6001 * (month + 13);
+    } else {
+      c = 365.25 * year;
+      e = 30.6001 * (month + 1);
+    }
+    jd = c + e + day - 694039.09;
+    jd /= 29.5305882;
+    b = parseInt(jd);
+    jd -= b;
+    const age = jd * 29.5305882;
+    const pct = (1 - Math.cos(jd * 2 * Math.PI)) / 2;
+    return { age, fraction: jd, illumination: pct };
+  }
+
+  function getPhaseName(age) {
+    if (age < 1.85) return 'New Moon';
+    if (age < 5.53) return 'Waxing Crescent';
+    if (age < 9.22) return 'First Quarter';
+    if (age < 12.91) return 'Waxing Gibbous';
+    if (age < 16.61) return 'Full Moon';
+    if (age < 20.30) return 'Waning Gibbous';
+    if (age < 23.99) return 'Last Quarter';
+    if (age < 27.68) return 'Waning Crescent';
+    return 'New Moon';
+  }
+
+  function drawMoon(fraction) {
+    const cx = 100, cy = 100, r = 90;
+    const phase = fraction;
+    let d;
+
+    if (phase <= 0.5) {
+      const sweep = phase * 2;
+      const rx = r * Math.abs(1 - sweep * 2);
+      const leftArc = sweep < 0.25 ? 1 : 0;
+      d = `M ${cx} ${cy - r}
+           A ${r} ${r} 0 0 0 ${cx} ${cy + r}
+           A ${rx} ${r} 0 0 ${leftArc} ${cx} ${cy - r}`;
+    } else {
+      const sweep = (phase - 0.5) * 2;
+      const rx = r * Math.abs(1 - sweep * 2);
+      const rightArc = sweep > 0.75 ? 1 : 0;
+      d = `M ${cx} ${cy - r}
+           A ${r} ${r} 0 0 1 ${cx} ${cy + r}
+           A ${rx} ${r} 0 0 ${rightArc} ${cx} ${cy - r}`;
+    }
+
+    document.getElementById('shadow').setAttribute('d', d);
+  }
+
+  const now = new Date();
+  const { age, fraction, illumination } = getMoonPhase(now);
+  const phaseName = getPhaseName(age);
+
+  drawMoon(fraction);
+  document.getElementById('phase-name').textContent = phaseName;
+  document.getElementById('illumination').textContent = `${Math.round(illumination * 100)}% illuminated`;
+  document.getElementById('date-info').textContent = now.toLocaleDateString(undefined, {
+    weekday: 'long', month: 'long', day: 'numeric'
+  });
+</script>
+</body>
+</html>

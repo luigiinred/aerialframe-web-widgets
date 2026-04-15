@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analog Clock</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: transparent;
+    overflow: hidden;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .clock-wrap {
+    width: min(85vw, 85vh);
+    height: min(85vw, 85vh);
+    filter: drop-shadow(0 2px 12px rgba(0,0,0,0.4));
+  }
+  svg { width: 100%; height: 100%; }
+  .face { fill: none; stroke: var(--color); stroke-width: 1.5; opacity: 0.3; }
+  .tick-major { stroke: var(--color); stroke-width: 2; opacity: 0.8; }
+  .tick-minor { stroke: var(--color); stroke-width: 1; opacity: 0.3; }
+  .numeral {
+    fill: var(--color);
+    font-family: -apple-system, 'SF Pro Display', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    text-anchor: middle;
+    dominant-baseline: central;
+    opacity: 0.7;
+  }
+  .hand-hour { stroke: var(--color); stroke-width: 3.5; stroke-linecap: round; }
+  .hand-minute { stroke: var(--color); stroke-width: 2.5; stroke-linecap: round; }
+  .hand-second { stroke: var(--accent); stroke-width: 1; stroke-linecap: round; }
+  .center-dot { fill: var(--accent); }
+  .center-ring { fill: none; stroke: var(--color); stroke-width: 1.5; }
+</style>
+</head>
+<body>
+<div class="clock-wrap">
+<svg viewBox="0 0 200 200">
+  <circle class="face" cx="100" cy="100" r="95"/>
+  <g id="ticks"></g>
+  <g id="numerals"></g>
+  <line id="hour" class="hand-hour" x1="100" y1="100" x2="100" y2="45"/>
+  <line id="minute" class="hand-minute" x1="100" y1="100" x2="100" y2="28"/>
+  <line id="second" class="hand-second" x1="100" y1="115" x2="100" y2="25"/>
+  <circle class="center-dot" cx="100" cy="100" r="3"/>
+  <circle class="center-ring" cx="100" cy="100" r="5"/>
+</svg>
+</div>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const color = params.get('color') || '#ffffff';
+  const accent = params.get('accent') || '#ff6b6b';
+  const showSeconds = params.get('seconds') !== 'false';
+  const showNumerals = params.get('numerals') !== 'false';
+
+  document.documentElement.style.setProperty('--color', color);
+  document.documentElement.style.setProperty('--accent', accent);
+
+  if (!showSeconds) document.getElementById('second').style.display = 'none';
+
+  const ticksG = document.getElementById('ticks');
+  for (let i = 0; i < 60; i++) {
+    const angle = (i * 6) * Math.PI / 180;
+    const isMajor = i % 5 === 0;
+    const r1 = isMajor ? 83 : 88;
+    const r2 = 92;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', 100 + r1 * Math.sin(angle));
+    line.setAttribute('y1', 100 - r1 * Math.cos(angle));
+    line.setAttribute('x2', 100 + r2 * Math.sin(angle));
+    line.setAttribute('y2', 100 - r2 * Math.cos(angle));
+    line.setAttribute('class', isMajor ? 'tick-major' : 'tick-minor');
+    ticksG.appendChild(line);
+  }
+
+  if (showNumerals) {
+    const numeralsG = document.getElementById('numerals');
+    for (let i = 1; i <= 12; i++) {
+      const angle = (i * 30) * Math.PI / 180;
+      const r = 74;
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', 100 + r * Math.sin(angle));
+      text.setAttribute('y', 100 - r * Math.cos(angle));
+      text.setAttribute('class', 'numeral');
+      text.textContent = i;
+      numeralsG.appendChild(text);
+    }
+  }
+
+  function setHand(el, angle) {
+    el.setAttribute('transform', `rotate(${angle} 100 100)`);
+  }
+
+  function update() {
+    const now = new Date();
+    const h = now.getHours() % 12;
+    const m = now.getMinutes();
+    const s = now.getSeconds();
+    const ms = now.getMilliseconds();
+
+    const secAngle = (s + ms / 1000) * 6;
+    const minAngle = (m + s / 60) * 6;
+    const hourAngle = (h + m / 60) * 30;
+
+    setHand(document.getElementById('hour'), hourAngle);
+    setHand(document.getElementById('minute'), minAngle);
+    if (showSeconds) setHand(document.getElementById('second'), secAngle);
+  }
+
+  update();
+  setInterval(update, showSeconds ? 50 : 1000);
+</script>
+</body>
+</html>

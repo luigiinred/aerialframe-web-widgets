@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Affirmations</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8%;
+  }
+  .container {
+    text-align: center;
+    color: var(--color);
+    text-shadow: 0 1px 10px rgba(0,0,0,0.5);
+  }
+  .breathe-ring {
+    width: clamp(40px, 10vw, 80px);
+    height: clamp(40px, 10vw, 80px);
+    border-radius: 50%;
+    border: 2px solid var(--color);
+    opacity: 0.2;
+    margin: 0 auto 1.5em;
+    animation: breathe 6s ease-in-out infinite;
+  }
+  @keyframes breathe {
+    0%, 100% { transform: scale(0.8); opacity: 0.15; }
+    50% { transform: scale(1.2); opacity: 0.35; }
+  }
+  .affirmation {
+    font-size: clamp(1rem, 4vw, 2.4rem);
+    font-weight: 300;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    opacity: 0;
+    transition: opacity 2s ease;
+  }
+  .affirmation.visible { opacity: 1; }
+  .category {
+    font-size: clamp(0.5rem, 1.5vw, 0.7rem);
+    font-weight: 600;
+    opacity: 0.4;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 1.5em;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="breathe-ring"></div>
+  <div class="affirmation" id="text"></div>
+  <div class="category" id="category"></div>
+</div>
+<script>
+  const affirmations = [
+    { text: "I am worthy of love and kindness.", cat: "Self-Worth" },
+    { text: "Today, I choose peace over worry.", cat: "Mindset" },
+    { text: "I am becoming the best version of myself.", cat: "Growth" },
+    { text: "My potential is limitless.", cat: "Confidence" },
+    { text: "I attract positivity and abundance.", cat: "Abundance" },
+    { text: "I release what no longer serves me.", cat: "Letting Go" },
+    { text: "Every day is a fresh start.", cat: "Renewal" },
+    { text: "I am grateful for this moment.", cat: "Gratitude" },
+    { text: "I trust the journey of my life.", cat: "Trust" },
+    { text: "I am strong, capable, and resilient.", cat: "Strength" },
+    { text: "I deserve happiness and fulfillment.", cat: "Self-Worth" },
+    { text: "My mind is calm, my heart is open.", cat: "Peace" },
+    { text: "I embrace change and welcome growth.", cat: "Growth" },
+    { text: "I am enough, exactly as I am.", cat: "Self-Worth" },
+    { text: "Good things are flowing into my life.", cat: "Abundance" },
+    { text: "I radiate confidence and grace.", cat: "Confidence" },
+    { text: "I am at peace with my past.", cat: "Letting Go" },
+    { text: "Today I will make progress, not perfection.", cat: "Mindset" },
+    { text: "I am surrounded by love and support.", cat: "Connection" },
+    { text: "I choose joy in every moment.", cat: "Joy" },
+  ];
+
+  const params = new URLSearchParams(window.location.search);
+  const color = params.get('color') || '#ffffff';
+  const interval = parseInt(params.get('interval') || '20') * 1000;
+
+  document.documentElement.style.setProperty('--color', color);
+
+  const textEl = document.getElementById('text');
+  const catEl = document.getElementById('category');
+  let index = Math.floor(Math.random() * affirmations.length);
+
+  for (let i = affirmations.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [affirmations[i], affirmations[j]] = [affirmations[j], affirmations[i]];
+  }
+
+  function show() {
+    textEl.classList.remove('visible');
+    setTimeout(() => {
+      const a = affirmations[index];
+      textEl.textContent = a.text;
+      catEl.textContent = a.cat;
+      textEl.classList.add('visible');
+      index = (index + 1) % affirmations.length;
+    }, 2000);
+  }
+
+  show();
+  setInterval(show, interval);
+</script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minimal Clock</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .container {
+    text-align: center;
+    color: var(--color);
+    text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+  }
+  .time {
+    font-size: clamp(2rem, 12vw, 8rem);
+    font-weight: 200;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+  .time .seconds {
+    font-size: 0.35em;
+    opacity: 0.5;
+    vertical-align: super;
+    margin-left: 0.1em;
+  }
+  .date {
+    font-size: clamp(0.7rem, 3vw, 1.6rem);
+    font-weight: 400;
+    opacity: 0.7;
+    margin-top: 0.3em;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .ampm {
+    font-size: 0.3em;
+    font-weight: 400;
+    opacity: 0.6;
+    margin-left: 0.15em;
+    vertical-align: super;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="time" id="time"></div>
+  <div class="date" id="date"></div>
+</div>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const is24h = params.get('24h') !== 'false';
+  const showSeconds = params.get('seconds') !== 'false';
+  const showDate = params.get('date') !== 'false';
+  const color = params.get('color') || '#ffffff';
+
+  document.documentElement.style.setProperty('--color', color);
+  if (!showDate) document.getElementById('date').style.display = 'none';
+
+  function update() {
+    const now = new Date();
+    let h = now.getHours();
+    const m = String(now.getMinutes()).padStart(2, '0');
+    const s = String(now.getSeconds()).padStart(2, '0');
+    let ampm = '';
+
+    if (!is24h) {
+      ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+    }
+
+    let timeHTML = `${is24h ? String(h).padStart(2, '0') : h}:${m}`;
+    if (showSeconds) timeHTML += `<span class="seconds">${s}</span>`;
+    if (!is24h) timeHTML += `<span class="ampm">${ampm}</span>`;
+
+    document.getElementById('time').innerHTML = timeHTML;
+
+    if (showDate) {
+      const opts = { weekday: 'long', month: 'long', day: 'numeric' };
+      document.getElementById('date').textContent = now.toLocaleDateString(undefined, opts);
+    }
+  }
+
+  update();
+  setInterval(update, 1000);
+</script>
+</body>
+</html>

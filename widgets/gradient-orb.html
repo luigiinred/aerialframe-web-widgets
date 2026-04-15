@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gradient Orb</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: transparent;
+    overflow: hidden;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .scene {
+    width: 100%; height: 100%;
+    position: relative;
+  }
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(var(--blur));
+    mix-blend-mode: screen;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+  }
+  .orb-1 {
+    width: 60%; height: 60%;
+    top: 10%; left: 15%;
+    background: radial-gradient(circle, var(--c1) 0%, transparent 70%);
+    animation: drift1 8s ease-in-out infinite alternate;
+  }
+  .orb-2 {
+    width: 50%; height: 50%;
+    top: 30%; left: 35%;
+    background: radial-gradient(circle, var(--c2) 0%, transparent 70%);
+    animation: drift2 10s ease-in-out infinite alternate;
+  }
+  .orb-3 {
+    width: 45%; height: 45%;
+    top: 20%; left: 5%;
+    background: radial-gradient(circle, var(--c3) 0%, transparent 70%);
+    animation: drift3 12s ease-in-out infinite alternate;
+  }
+  .orb-4 {
+    width: 35%; height: 35%;
+    top: 50%; left: 50%;
+    background: radial-gradient(circle, var(--c4) 0%, transparent 70%);
+    animation: drift4 9s ease-in-out infinite alternate;
+  }
+  @keyframes drift1 {
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(15%, 20%) scale(1.1); }
+    66% { transform: translate(-10%, 10%) scale(0.95); }
+    100% { transform: translate(20%, -10%) scale(1.05); }
+  }
+  @keyframes drift2 {
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(-20%, 15%) scale(1.15); }
+    66% { transform: translate(10%, -15%) scale(0.9); }
+    100% { transform: translate(-15%, 25%) scale(1.1); }
+  }
+  @keyframes drift3 {
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(25%, -10%) scale(1.05); }
+    66% { transform: translate(-5%, 20%) scale(1.12); }
+    100% { transform: translate(10%, 15%) scale(0.95); }
+  }
+  @keyframes drift4 {
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(-15%, -20%) scale(1.08); }
+    66% { transform: translate(20%, 10%) scale(0.92); }
+    100% { transform: translate(-10%, -5%) scale(1.15); }
+  }
+</style>
+</head>
+<body>
+<div class="scene">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="orb orb-4"></div>
+</div>
+<script>
+  const params = new URLSearchParams(window.location.search);
+
+  const presets = {
+    sunset:  { c1: '#ff6b35', c2: '#f7931e', c3: '#ff1744', c4: '#ff9100' },
+    ocean:   { c1: '#0077b6', c2: '#00b4d8', c3: '#48cae4', c4: '#90e0ef' },
+    aurora:  { c1: '#00ff87', c2: '#60efff', c3: '#7b2ff7', c4: '#00d4ff' },
+    berry:   { c1: '#c471ed', c2: '#f64f59', c3: '#12c2e9', c4: '#a855f7' },
+    forest:  { c1: '#134e5e', c2: '#71b280', c3: '#38ef7d', c4: '#11998e' },
+    fire:    { c1: '#f12711', c2: '#f5af19', c3: '#fc4a1a', c4: '#f7b733' },
+    lavender:{ c1: '#a18cd1', c2: '#fbc2eb', c3: '#8ec5fc', c4: '#e0c3fc' },
+    neon:    { c1: '#00ff87', c2: '#ff0055', c3: '#00d4ff', c4: '#ffee00' },
+  };
+
+  const preset = params.get('preset') || 'aurora';
+  const colors = presets[preset] || presets.aurora;
+  const blur = params.get('blur') || '40px';
+  const opacity = params.get('opacity') || '0.6';
+
+  const c1 = params.get('c1') || colors.c1;
+  const c2 = params.get('c2') || colors.c2;
+  const c3 = params.get('c3') || colors.c3;
+  const c4 = params.get('c4') || colors.c4;
+
+  const root = document.documentElement.style;
+  root.setProperty('--c1', c1);
+  root.setProperty('--c2', c2);
+  root.setProperty('--c3', c3);
+  root.setProperty('--c4', c4);
+  root.setProperty('--blur', blur);
+
+  document.querySelectorAll('.orb').forEach(orb => {
+    orb.style.opacity = opacity;
+  });
+</script>
+</body>
+</html>

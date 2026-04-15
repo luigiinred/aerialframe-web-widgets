@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World Clocks</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5%;
+  }
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.4rem, 2.5vh, 1.2rem);
+    color: var(--color);
+    text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+    width: 100%;
+    max-width: 500px;
+  }
+  .clock-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 0.3em 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .clock-row:last-child { border-bottom: none; }
+  .city-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1em;
+  }
+  .city-name {
+    font-size: clamp(0.7rem, 2.5vw, 1.1rem);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .city-offset {
+    font-size: clamp(0.5rem, 1.5vw, 0.7rem);
+    opacity: 0.4;
+    font-weight: 400;
+  }
+  .city-time {
+    font-size: clamp(1rem, 4vw, 2rem);
+    font-weight: 200;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+  .city-period {
+    font-size: 0.5em;
+    opacity: 0.5;
+    margin-left: 0.2em;
+    font-weight: 400;
+  }
+  .night-indicator {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    margin-right: 0.4em;
+    vertical-align: middle;
+  }
+  .is-day { background: rgba(255,200,50,0.7); }
+  .is-night { background: rgba(100,150,255,0.5); }
+</style>
+</head>
+<body>
+<div class="container" id="clocks"></div>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const color = params.get('color') || '#ffffff';
+  const is24h = params.get('24h') !== 'false';
+
+  document.documentElement.style.setProperty('--color', color);
+
+  const defaultCities = [
+    { name: 'New York', tz: 'America/New_York' },
+    { name: 'London', tz: 'Europe/London' },
+    { name: 'Tokyo', tz: 'Asia/Tokyo' },
+    { name: 'Sydney', tz: 'Australia/Sydney' },
+  ];
+
+  const citiesParam = params.get('cities');
+  let cities;
+  if (citiesParam) {
+    try {
+      cities = JSON.parse(decodeURIComponent(citiesParam));
+    } catch { cities = defaultCities; }
+  } else {
+    cities = defaultCities;
+  }
+
+  function getOffset(tz) {
+    const now = new Date();
+    const here = now.getTimezoneOffset();
+    const there = new Date(now.toLocaleString('en-US', { timeZone: tz }));
+    const diff = (there - now) / 60000 + here;
+    const hrs = Math.round(diff / 60);
+    const sign = hrs >= 0 ? '+' : '';
+    return `UTC${sign}${hrs}`;
+  }
+
+  function update() {
+    const now = new Date();
+    const container = document.getElementById('clocks');
+    container.innerHTML = '';
+
+    for (const city of cities) {
+      const options = { timeZone: city.tz, hour: 'numeric', minute: '2-digit', hour12: !is24h };
+      const timeStr = now.toLocaleTimeString('en-US', options);
+
+      const hourOpt = { timeZone: city.tz, hour: 'numeric', hour12: false };
+      const hour = parseInt(now.toLocaleTimeString('en-US', hourOpt));
+      const isDay = hour >= 6 && hour < 20;
+
+      const parts = timeStr.match(/(\d+:\d+)\s*(AM|PM)?/i) || [timeStr, timeStr, ''];
+
+      const row = document.createElement('div');
+      row.className = 'clock-row';
+      row.innerHTML = `
+        <div class="city-info">
+          <div class="city-name">
+            <span class="night-indicator ${isDay ? 'is-day' : 'is-night'}"></span>${city.name}
+          </div>
+          <div class="city-offset">${getOffset(city.tz)}</div>
+        </div>
+        <div class="city-time">
+          ${parts[1]}${parts[2] ? `<span class="city-period">${parts[2]}</span>` : ''}
+        </div>
+      `;
+      container.appendChild(row);
+    }
+  }
+
+  update();
+  setInterval(update, 1000);
+</script>
+</body>
+</html>

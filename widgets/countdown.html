@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Countdown Timer</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5%;
+  }
+  .container {
+    text-align: center;
+    color: var(--color);
+    text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+  }
+  .title {
+    font-size: clamp(0.7rem, 2.5vw, 1.4rem);
+    font-weight: 500;
+    opacity: 0.7;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.8em;
+  }
+  .countdown {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.5rem, 3vw, 2rem);
+  }
+  .unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: clamp(2.5rem, 10vw, 6rem);
+  }
+  .value {
+    font-size: clamp(1.8rem, 10vw, 6rem);
+    font-weight: 100;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .label {
+    font-size: clamp(0.5rem, 1.5vw, 0.8rem);
+    font-weight: 500;
+    opacity: 0.5;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 0.4em;
+  }
+  .separator {
+    font-size: clamp(1.5rem, 6vw, 4rem);
+    font-weight: 100;
+    opacity: 0.2;
+    margin-top: -0.3em;
+  }
+  .complete {
+    font-size: clamp(1.5rem, 6vw, 3rem);
+    font-weight: 300;
+    opacity: 0.9;
+  }
+  .progress-ring {
+    width: clamp(60px, 15vw, 120px);
+    height: clamp(60px, 15vw, 120px);
+    margin: 1.5em auto 0;
+  }
+  .progress-bg { stroke: var(--color); opacity: 0.1; }
+  .progress-fg {
+    stroke: var(--accent);
+    opacity: 0.8;
+    transition: stroke-dashoffset 1s linear;
+    transform: rotate(-90deg);
+    transform-origin: center;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="title" id="title"></div>
+  <div id="countdown-area"></div>
+  <div class="progress-ring" id="ring-container">
+    <svg viewBox="0 0 100 100" id="ring">
+      <circle class="progress-bg" cx="50" cy="50" r="45" fill="none" stroke-width="2"/>
+      <circle class="progress-fg" id="progress" cx="50" cy="50" r="45" fill="none" stroke-width="2"
+              stroke-dasharray="283" stroke-dashoffset="0" stroke-linecap="round"/>
+    </svg>
+  </div>
+</div>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const targetDate = params.get('date') || '2025-12-31T00:00:00';
+  const title = params.get('title') || '';
+  const color = params.get('color') || '#ffffff';
+  const accent = params.get('accent') || '#64b5f6';
+  const showRing = params.get('ring') !== 'false';
+
+  document.documentElement.style.setProperty('--color', color);
+  document.documentElement.style.setProperty('--accent', accent);
+
+  const titleEl = document.getElementById('title');
+  titleEl.textContent = title;
+  if (!title) titleEl.style.display = 'none';
+  if (!showRing) document.getElementById('ring-container').style.display = 'none';
+
+  const target = new Date(targetDate).getTime();
+  const start = Date.now();
+  const totalDuration = target - start;
+
+  function update() {
+    const now = Date.now();
+    const diff = target - now;
+    const area = document.getElementById('countdown-area');
+
+    if (diff <= 0) {
+      area.innerHTML = '<div class="complete">🎉</div>';
+      return;
+    }
+
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins = Math.floor((diff % 3600000) / 60000);
+    const secs = Math.floor((diff % 60000) / 1000);
+
+    let html = '<div class="countdown">';
+    if (days > 0) {
+      html += `<div class="unit"><div class="value">${days}</div><div class="label">Day${days !== 1 ? 's' : ''}</div></div>`;
+      html += '<div class="separator">:</div>';
+    }
+    html += `<div class="unit"><div class="value">${String(hours).padStart(2,'0')}</div><div class="label">Hr</div></div>`;
+    html += '<div class="separator">:</div>';
+    html += `<div class="unit"><div class="value">${String(mins).padStart(2,'0')}</div><div class="label">Min</div></div>`;
+    html += '<div class="separator">:</div>';
+    html += `<div class="unit"><div class="value">${String(secs).padStart(2,'0')}</div><div class="label">Sec</div></div>`;
+    html += '</div>';
+    area.innerHTML = html;
+
+    if (showRing && totalDuration > 0) {
+      const elapsed = now - start;
+      const pct = Math.min(elapsed / totalDuration, 1);
+      const offset = 283 * (1 - pct);
+      document.getElementById('progress').setAttribute('stroke-dashoffset', offset);
+    }
+  }
+
+  update();
+  setInterval(update, 1000);
+</script>
+</body>
+</html>

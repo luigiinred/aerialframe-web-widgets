@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AerialFrame Web Widgets</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html {
+    background: #0a0a0a;
+    color: #e0e0e0;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body { min-height: 100vh; }
+
+  .hero {
+    text-align: center;
+    padding: 6rem 2rem 4rem;
+    background: linear-gradient(180deg, #1a1a2e 0%, #0a0a0a 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(100,130,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 0.5em;
+  }
+  .hero h1 span { color: #64b5f6; }
+  .hero p {
+    font-size: clamp(0.9rem, 2vw, 1.2rem);
+    opacity: 0.6;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  .badge {
+    display: inline-block;
+    background: rgba(100,181,246,0.12);
+    color: #64b5f6;
+    padding: 0.3em 1em;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: 1.5em;
+    border: 1px solid rgba(100,181,246,0.2);
+  }
+
+  .grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .card {
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .card:hover {
+    border-color: #333;
+    transform: translateY(-2px);
+  }
+  .card-preview {
+    height: 200px;
+    background: #0d0d1a;
+    position: relative;
+    overflow: hidden;
+  }
+  .card-preview iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    pointer-events: none;
+  }
+  .card-body {
+    padding: 1.25rem;
+  }
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.3em;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+  .card-title .emoji { font-size: 1.2em; }
+  .card-desc {
+    font-size: 0.85rem;
+    opacity: 0.5;
+    line-height: 1.5;
+    margin-bottom: 1em;
+  }
+  .card-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: 0.45em 1em;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .btn-primary {
+    background: rgba(100,181,246,0.15);
+    color: #64b5f6;
+    border: 1px solid rgba(100,181,246,0.25);
+  }
+  .btn-primary:hover { background: rgba(100,181,246,0.25); }
+  .btn-secondary {
+    background: rgba(255,255,255,0.05);
+    color: #aaa;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+
+  .howto {
+    max-width: 800px;
+    margin: 3rem auto;
+    padding: 2rem;
+  }
+  .howto h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.02em;
+  }
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .step {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  .step-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(100,181,246,0.15);
+    color: #64b5f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+  .step-content h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.3em;
+  }
+  .step-content p {
+    font-size: 0.85rem;
+    opacity: 0.5;
+    line-height: 1.5;
+  }
+  code {
+    background: rgba(255,255,255,0.06);
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-size: 0.85em;
+    color: #7ec8e3;
+  }
+
+  footer {
+    text-align: center;
+    padding: 3rem 2rem;
+    opacity: 0.3;
+    font-size: 0.8rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="badge">Free & Open Source</div>
+  <h1>AerialFrame <span>Web Widgets</span></h1>
+  <p>Beautiful, self-contained web widgets designed to be embedded in AerialFrame's WebView widget. Copy a URL, paste it in, and enjoy.</p>
+</div>
+
+<div class="grid" id="widgets"></div>
+
+<div class="howto">
+  <h2>How to Use</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>Add a Web View Widget</h3>
+        <p>In AerialFrame, go to Settings → Widgets → Add Widget → Web View.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>Copy a Widget URL</h3>
+        <p>Click "Copy URL" on any widget above. Customize it by adding URL parameters.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>Paste the URL</h3>
+        <p>In the Web View widget settings, paste the URL and optionally set an auto-refresh interval.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h3>Customize</h3>
+        <p>Each widget supports URL parameters for colors, content, and behavior. Check the README on GitHub for full docs.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Made for AerialFrame &middot; MIT License
+</footer>
+
+<script>
+  const BASE = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
+  const widgets = [
+    {
+      name: 'Minimal Clock',
+      emoji: '🕐',
+      desc: 'Clean digital clock with date. Supports 12/24h, seconds toggle, and custom colors.',
+      file: 'minimal-clock.html',
+      params: '',
+    },
+    {
+      name: 'Analog Clock',
+      emoji: '🕰️',
+      desc: 'Beautiful SVG analog clock with smooth second hand, customizable colors, and tick marks.',
+      file: 'analog-clock.html',
+      params: '',
+    },
+    {
+      name: 'Inspirational Quotes',
+      emoji: '💬',
+      desc: '25 rotating quotes with elegant serif typography and smooth crossfade transitions.',
+      file: 'quotes.html',
+      params: '',
+    },
+    {
+      name: 'Countdown Timer',
+      emoji: '⏳',
+      desc: 'Count down to any date with days, hours, minutes, and seconds. Includes progress ring.',
+      file: 'countdown.html',
+      params: '?date=2026-01-01T00:00:00&title=New%20Year',
+    },
+    {
+      name: 'World Clocks',
+      emoji: '🌍',
+      desc: 'Show time across multiple cities with day/night indicators and UTC offsets.',
+      file: 'world-clocks.html',
+      params: '',
+    },
+    {
+      name: 'Gradient Orb',
+      emoji: '🔮',
+      desc: 'Mesmerizing animated gradient orbs with 8 color presets. Pure ambient decoration.',
+      file: 'gradient-orb.html',
+      params: '?preset=aurora',
+    },
+    {
+      name: 'Daily Affirmations',
+      emoji: '✨',
+      desc: 'Rotating positive affirmations with a breathing animation. 20 curated messages.',
+      file: 'affirmations.html',
+      params: '',
+    },
+    {
+      name: 'Moon Phase',
+      emoji: '🌙',
+      desc: 'Real-time moon phase with SVG illustration, phase name, and illumination percentage.',
+      file: 'moon-phase.html',
+      params: '',
+    },
+    {
+      name: 'Floating Particles',
+      emoji: '✦',
+      desc: 'Animated particle field with connecting lines. Configurable count, speed, and size.',
+      file: 'particles.html',
+      params: '',
+    },
+    {
+      name: 'Neon Text',
+      emoji: '💡',
+      desc: 'Customizable neon sign effect with glow and optional flicker. 9 color presets.',
+      file: 'neon-text.html',
+      params: '?text=Hello&preset=pink',
+    },
+  ];
+
+  const grid = document.getElementById('widgets');
+
+  widgets.forEach(w => {
+    const fullUrl = `${BASE}/widgets/${w.file}${w.params}`;
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-preview">
+        <iframe src="widgets/${w.file}${w.params}" loading="lazy"></iframe>
+      </div>
+      <div class="card-body">
+        <div class="card-title"><span class="emoji">${w.emoji}</span> ${w.name}</div>
+        <div class="card-desc">${w.desc}</div>
+        <div class="card-actions">
+          <a href="widgets/${w.file}${w.params}" target="_blank" class="btn btn-primary">Open ↗</a>
+          <button class="btn btn-secondary" onclick="copyUrl('${fullUrl}')">Copy URL</button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  function copyUrl(url) {
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = event.target;
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = orig, 1500);
+    });
+  }
+</script>
+</body>
+</html>

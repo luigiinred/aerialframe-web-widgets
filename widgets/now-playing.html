@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Now Playing Visualizer</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8%;
+  }
+  .container {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.8rem, 4vw, 2rem);
+    color: var(--color);
+    text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+    width: 100%;
+    max-width: 600px;
+  }
+  .visualizer {
+    display: flex;
+    align-items: flex-end;
+    gap: clamp(2px, 0.5vw, 4px);
+    height: clamp(30px, 8vw, 60px);
+    flex-shrink: 0;
+  }
+  .bar {
+    width: clamp(3px, 0.8vw, 6px);
+    background: var(--accent);
+    border-radius: 2px;
+    animation: equalizer var(--duration) ease-in-out infinite alternate;
+    opacity: 0.8;
+  }
+  @keyframes equalizer {
+    0% { height: var(--min-h); }
+    100% { height: var(--max-h); }
+  }
+  .track-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2em;
+    min-width: 0;
+  }
+  .track-title {
+    font-size: clamp(0.9rem, 3vw, 1.6rem);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .track-artist {
+    font-size: clamp(0.6rem, 2vw, 1rem);
+    font-weight: 400;
+    opacity: 0.6;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .track-album {
+    font-size: clamp(0.5rem, 1.5vw, 0.8rem);
+    font-weight: 400;
+    opacity: 0.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-style: italic;
+  }
+  .disc {
+    width: clamp(40px, 12vw, 80px);
+    height: clamp(40px, 12vw, 80px);
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.15);
+    position: relative;
+    flex-shrink: 0;
+    animation: spin 4s linear infinite;
+    background: conic-gradient(
+      from 0deg,
+      rgba(255,255,255,0.05) 0deg,
+      rgba(255,255,255,0.12) 60deg,
+      rgba(255,255,255,0.03) 120deg,
+      rgba(255,255,255,0.1) 180deg,
+      rgba(255,255,255,0.04) 240deg,
+      rgba(255,255,255,0.08) 360deg
+    );
+  }
+  .disc::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 25%;
+    height: 25%;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="disc" id="disc"></div>
+  <div class="track-info">
+    <div class="track-title" id="title"></div>
+    <div class="track-artist" id="artist"></div>
+    <div class="track-album" id="album"></div>
+  </div>
+  <div class="visualizer" id="visualizer"></div>
+</div>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const color = params.get('color') || '#ffffff';
+  const accent = params.get('accent') || '#1DB954';
+  const title = decodeURIComponent(params.get('title') || 'Bohemian Rhapsody');
+  const artist = decodeURIComponent(params.get('artist') || 'Queen');
+  const album = decodeURIComponent(params.get('album') || 'A Night at the Opera');
+  const barCount = parseInt(params.get('bars') || '8');
+  const showDisc = params.get('disc') !== 'false';
+
+  document.documentElement.style.setProperty('--color', color);
+  document.documentElement.style.setProperty('--accent', accent);
+
+  document.getElementById('title').textContent = title;
+  document.getElementById('artist').textContent = artist;
+
+  const albumEl = document.getElementById('album');
+  if (album) {
+    albumEl.textContent = album;
+  } else {
+    albumEl.style.display = 'none';
+  }
+
+  if (!showDisc) document.getElementById('disc').style.display = 'none';
+
+  const visualizer = document.getElementById('visualizer');
+  for (let i = 0; i < barCount; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    const minH = 15 + Math.random() * 15;
+    const maxH = 50 + Math.random() * 50;
+    const dur = 0.4 + Math.random() * 0.6;
+    bar.style.setProperty('--min-h', `${minH}%`);
+    bar.style.setProperty('--max-h', `${maxH}%`);
+    bar.style.setProperty('--duration', `${dur}s`);
+    bar.style.animationDelay = `${Math.random() * 0.5}s`;
+    visualizer.appendChild(bar);
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neon Text</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5%;
+  }
+  .neon-container {
+    text-align: center;
+  }
+  .neon-text {
+    font-size: clamp(1.5rem, 8vw, 5rem);
+    font-weight: 700;
+    color: var(--glow);
+    text-shadow:
+      0 0 7px var(--glow),
+      0 0 10px var(--glow),
+      0 0 21px var(--glow),
+      0 0 42px var(--color),
+      0 0 82px var(--color),
+      0 0 92px var(--color);
+    letter-spacing: 0.05em;
+    animation: flicker 3s infinite alternate;
+    line-height: 1.2;
+  }
+  .neon-subtitle {
+    font-size: clamp(0.6rem, 2vw, 1.2rem);
+    font-weight: 300;
+    color: var(--glow);
+    text-shadow:
+      0 0 5px var(--glow),
+      0 0 10px var(--color);
+    opacity: 0.6;
+    margin-top: 0.5em;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  @keyframes flicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% {
+      opacity: 1;
+    }
+    20%, 24%, 55% {
+      opacity: 0.85;
+    }
+  }
+  .neon-text.no-flicker {
+    animation: none;
+  }
+  .neon-line {
+    width: 80%;
+    max-width: 300px;
+    height: 1px;
+    margin: 0.8em auto;
+    background: var(--glow);
+    box-shadow: 0 0 5px var(--glow), 0 0 15px var(--color);
+    opacity: 0.4;
+  }
+</style>
+</head>
+<body>
+<div class="neon-container">
+  <div class="neon-text" id="main-text"></div>
+  <div class="neon-line" id="line"></div>
+  <div class="neon-subtitle" id="subtitle"></div>
+</div>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const text = params.get('text') || 'Hello';
+  const subtitle = params.get('subtitle') || '';
+  const flicker = params.get('flicker') !== 'false';
+
+  const presets = {
+    pink:   { color: '#ff1177', glow: '#fff0f6' },
+    blue:   { color: '#0077ff', glow: '#e0f0ff' },
+    green:  { color: '#00ff41', glow: '#f0fff0' },
+    orange: { color: '#ff6600', glow: '#fff5e6' },
+    purple: { color: '#9b59b6', glow: '#f5e6ff' },
+    red:    { color: '#ff0000', glow: '#fff0f0' },
+    cyan:   { color: '#00ffff', glow: '#f0ffff' },
+    yellow: { color: '#ffff00', glow: '#fffff0' },
+    white:  { color: '#ffffff', glow: '#ffffff' },
+  };
+
+  const preset = params.get('preset') || 'pink';
+  const colors = presets[preset] || presets.pink;
+  const colorOverride = params.get('color');
+  const glowOverride = params.get('glow');
+
+  document.documentElement.style.setProperty('--color', colorOverride || colors.color);
+  document.documentElement.style.setProperty('--glow', glowOverride || colors.glow);
+
+  const mainEl = document.getElementById('main-text');
+  mainEl.textContent = decodeURIComponent(text);
+  if (!flicker) mainEl.classList.add('no-flicker');
+
+  const subtitleEl = document.getElementById('subtitle');
+  const lineEl = document.getElementById('line');
+  if (subtitle) {
+    subtitleEl.textContent = decodeURIComponent(subtitle);
+  } else {
+    subtitleEl.style.display = 'none';
+    lineEl.style.display = 'none';
+  }
+</script>
+</body>
+</html>
