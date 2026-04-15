@@ -1,6 +1,6 @@
 # AerialFrame Web Widgets
 
-A collection of 11 beautiful web widgets designed to be embedded in [AerialFrame](https://aerialframe.app)'s WebView widget. Each widget is a single HTML file — just copy the URL and paste it into your widget settings.
+A collection of 12 beautiful web widgets designed to be embedded in [AerialFrame](https://aerialframe.app)'s WebView widget. Each widget is a single HTML file — just copy the URL and paste it into your widget settings.
 
 **[Browse the gallery →](https://luigiinred.github.io/aerialframe-web-widgets/)**
 
@@ -29,6 +29,7 @@ A collection of 11 beautiful web widgets designed to be embedded in [AerialFrame
 | **Moon Phase** | Real-time moon phase & illumination | `widgets/moon-phase.html` |
 | **Floating Particles** | Animated particle field with lines | `widgets/particles.html` |
 | **Neon Text** | Glowing neon sign with custom text | `widgets/neon-text.html` |
+| **Now Playing** | Decorative now-playing with disc and equalizer | `widgets/now-playing.html` |
 | **Joke of the Day** | Random jokes from JokeAPI with punchline reveal | `widgets/joke.html` |
 
 **Base URL:** `https://luigiinred.github.io/aerialframe-web-widgets/`

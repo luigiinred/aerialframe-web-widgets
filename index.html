@@ -59,13 +59,41 @@
     border: 1px solid rgba(100,181,246,0.2);
   }
 
-  .grid {
+  .categories {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 1rem 2rem 2rem;
+  }
+  .category-section {
+    margin-bottom: 2.5rem;
+  }
+  .category-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #1a1a1a;
+  }
+  .category-icon {
+    font-size: 1.2rem;
+  }
+  .category-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .category-count {
+    font-size: 0.75rem;
+    opacity: 0.3;
+    font-weight: 400;
+    margin-left: 0.3em;
+  }
+
+  .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.25rem;
   }
 
   .card {
@@ -80,7 +108,7 @@
     transform: translateY(-2px);
   }
   .card-preview {
-    height: 200px;
+    height: 180px;
     background: #0d0d1a;
     position: relative;
     overflow: hidden;
@@ -92,22 +120,22 @@
     pointer-events: none;
   }
   .card-body {
-    padding: 1.25rem;
+    padding: 1.1rem 1.25rem;
   }
   .card-title {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
-    margin-bottom: 0.3em;
+    margin-bottom: 0.25em;
     display: flex;
     align-items: center;
     gap: 0.5em;
   }
-  .card-title .emoji { font-size: 1.2em; }
+  .card-title .emoji { font-size: 1.1em; }
   .card-desc {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     opacity: 0.5;
     line-height: 1.5;
-    margin-bottom: 1em;
+    margin-bottom: 0.9em;
   }
   .card-actions {
     display: flex;
@@ -118,12 +146,13 @@
     display: inline-flex;
     align-items: center;
     gap: 0.4em;
-    padding: 0.45em 1em;
+    padding: 0.4em 0.9em;
     border-radius: 8px;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 500;
     text-decoration: none;
     transition: background 0.2s;
+    cursor: pointer;
   }
   .btn-primary {
     background: rgba(100,181,246,0.15);
@@ -140,7 +169,7 @@
 
   .howto {
     max-width: 800px;
-    margin: 3rem auto;
+    margin: 1rem auto 3rem;
     padding: 2rem;
   }
   .howto h2 {
@@ -203,10 +232,10 @@
 <div class="hero">
   <div class="badge">Free & Open Source</div>
   <h1>AerialFrame <span>Web Widgets</span></h1>
-  <p>Beautiful, self-contained web widgets designed to be embedded in AerialFrame's WebView widget. Copy a URL, paste it in, and enjoy.</p>
+  <p>Beautiful web widgets designed to be embedded in AerialFrame's WebView widget. Copy a URL, paste it in, and enjoy.</p>
 </div>
 
-<div class="grid" id="widgets"></div>
+<div class="categories" id="categories"></div>
 
 <div class="howto">
   <h2>How to Use</h2>
@@ -236,7 +265,7 @@
       <div class="step-num">4</div>
       <div class="step-content">
         <h3>Customize</h3>
-        <p>Each widget supports URL parameters for colors, content, and behavior. Check the README on GitHub for full docs.</p>
+        <p>Each widget supports URL parameters for colors, content, and behavior. Check the <a href="https://github.com/luigiinred/aerialframe-web-widgets" style="color:#64b5f6;">README on GitHub</a> for full docs.</p>
       </div>
     </div>
   </div>
@@ -248,106 +277,92 @@
 
 <script>
   const BASE = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
-  const widgets = [
+
+  const categories = [
     {
-      name: 'Minimal Clock',
-      emoji: '🕐',
-      desc: 'Clean digital clock with date. Supports 12/24h, seconds toggle, and custom colors.',
-      file: 'minimal-clock.html',
-      params: '',
+      name: 'Time & Date',
+      icon: '🕐',
+      widgets: [
+        { name: 'Minimal Clock', emoji: '🕐', desc: 'Clean digital clock with date. Supports 12/24h, seconds toggle, and custom colors.', file: 'minimal-clock.html', params: '' },
+        { name: 'Analog Clock', emoji: '🕰️', desc: 'SVG analog clock with smooth second hand, customizable colors, and tick marks.', file: 'analog-clock.html', params: '' },
+        { name: 'Countdown Timer', emoji: '⏳', desc: 'Count down to any date with days, hours, minutes, and seconds.', file: 'countdown.html', params: '?date=2026-01-01T00:00:00&title=New%20Year' },
+        { name: 'World Clocks', emoji: '🌍', desc: 'Multiple cities with day/night indicators and UTC offsets.', file: 'world-clocks.html', params: '' },
+      ],
     },
     {
-      name: 'Analog Clock',
-      emoji: '🕰️',
-      desc: 'Beautiful SVG analog clock with smooth second hand, customizable colors, and tick marks.',
-      file: 'analog-clock.html',
-      params: '',
+      name: 'Text & Inspiration',
+      icon: '💬',
+      widgets: [
+        { name: 'Inspirational Quotes', emoji: '💬', desc: '25 rotating quotes with elegant serif typography and smooth crossfade.', file: 'quotes.html', params: '' },
+        { name: 'Daily Affirmations', emoji: '✨', desc: 'Rotating positive affirmations with a breathing animation.', file: 'affirmations.html', params: '' },
+        { name: 'Neon Text', emoji: '💡', desc: 'Customizable neon sign effect with glow and optional flicker. 9 color presets.', file: 'neon-text.html', params: '?text=Hello&preset=pink' },
+      ],
     },
     {
-      name: 'Inspirational Quotes',
-      emoji: '💬',
-      desc: '25 rotating quotes with elegant serif typography and smooth crossfade transitions.',
-      file: 'quotes.html',
-      params: '',
+      name: 'Visual & Ambient',
+      icon: '🔮',
+      widgets: [
+        { name: 'Gradient Orb', emoji: '🔮', desc: 'Mesmerizing animated gradient orbs with 8 color presets.', file: 'gradient-orb.html', params: '?preset=aurora' },
+        { name: 'Floating Particles', emoji: '✦', desc: 'Animated particle field with connecting lines. Configurable count, speed, and size.', file: 'particles.html', params: '' },
+        { name: 'Moon Phase', emoji: '🌙', desc: 'Real-time moon phase with SVG illustration, phase name, and illumination.', file: 'moon-phase.html', params: '' },
+      ],
     },
     {
-      name: 'Countdown Timer',
-      emoji: '⏳',
-      desc: 'Count down to any date with days, hours, minutes, and seconds.',
-      file: 'countdown.html',
-      params: '?date=2026-01-01T00:00:00&title=New%20Year',
+      name: 'Live Data',
+      icon: '📡',
+      widgets: [
+        { name: 'Joke of the Day', emoji: '😂', desc: 'Random jokes from JokeAPI with a delayed punchline reveal. Filter by category.', file: 'joke.html', params: '' },
+      ],
     },
     {
-      name: 'World Clocks',
-      emoji: '🌍',
-      desc: 'Show time across multiple cities with day/night indicators and UTC offsets.',
-      file: 'world-clocks.html',
-      params: '',
-    },
-    {
-      name: 'Gradient Orb',
-      emoji: '🔮',
-      desc: 'Mesmerizing animated gradient orbs with 8 color presets. Pure ambient decoration.',
-      file: 'gradient-orb.html',
-      params: '?preset=aurora',
-    },
-    {
-      name: 'Daily Affirmations',
-      emoji: '✨',
-      desc: 'Rotating positive affirmations with a breathing animation. 20 curated messages.',
-      file: 'affirmations.html',
-      params: '',
-    },
-    {
-      name: 'Moon Phase',
-      emoji: '🌙',
-      desc: 'Real-time moon phase with SVG illustration, phase name, and illumination percentage.',
-      file: 'moon-phase.html',
-      params: '',
-    },
-    {
-      name: 'Floating Particles',
-      emoji: '✦',
-      desc: 'Animated particle field with connecting lines. Configurable count, speed, and size.',
-      file: 'particles.html',
-      params: '',
-    },
-    {
-      name: 'Neon Text',
-      emoji: '💡',
-      desc: 'Customizable neon sign effect with glow and optional flicker. 9 color presets.',
-      file: 'neon-text.html',
-      params: '?text=Hello&preset=pink',
-    },
-    {
-      name: 'Joke of the Day',
-      emoji: '😂',
-      desc: 'Random jokes from JokeAPI with a delayed punchline reveal. Filter by category.',
-      file: 'joke.html',
-      params: '',
+      name: 'Media',
+      icon: '🎵',
+      widgets: [
+        { name: 'Now Playing', emoji: '🎵', desc: 'Decorative now-playing display with spinning disc and equalizer bars.', file: 'now-playing.html', params: '?title=Bohemian%20Rhapsody&artist=Queen' },
+      ],
     },
   ];
 
-  const grid = document.getElementById('widgets');
+  const container = document.getElementById('categories');
 
-  widgets.forEach(w => {
-    const fullUrl = `${BASE}/widgets/${w.file}${w.params}`;
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <div class="card-preview">
-        <iframe src="widgets/${w.file}${w.params}" loading="lazy"></iframe>
-      </div>
-      <div class="card-body">
-        <div class="card-title"><span class="emoji">${w.emoji}</span> ${w.name}</div>
-        <div class="card-desc">${w.desc}</div>
-        <div class="card-actions">
-          <a href="widgets/${w.file}${w.params}" target="_blank" class="btn btn-primary">Open ↗</a>
-          <button class="btn btn-secondary" onclick="copyUrl('${fullUrl}')">Copy URL</button>
-        </div>
-      </div>
+  categories.forEach(cat => {
+    const section = document.createElement('div');
+    section.className = 'category-section';
+
+    const header = document.createElement('div');
+    header.className = 'category-header';
+    header.innerHTML = `
+      <span class="category-icon">${cat.icon}</span>
+      <span class="category-name">${cat.name}</span>
+      <span class="category-count">${cat.widgets.length}</span>
     `;
-    grid.appendChild(card);
+    section.appendChild(header);
+
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+
+    cat.widgets.forEach(w => {
+      const fullUrl = `${BASE}/widgets/${w.file}${w.params}`;
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="card-preview">
+          <iframe src="widgets/${w.file}${w.params}" loading="lazy"></iframe>
+        </div>
+        <div class="card-body">
+          <div class="card-title"><span class="emoji">${w.emoji}</span> ${w.name}</div>
+          <div class="card-desc">${w.desc}</div>
+          <div class="card-actions">
+            <a href="widgets/${w.file}${w.params}" target="_blank" class="btn btn-primary">Open ↗</a>
+            <button class="btn btn-secondary" onclick="copyUrl('${fullUrl}')">Copy URL</button>
+          </div>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+
+    section.appendChild(grid);
+    container.appendChild(section);
   });
 
   function copyUrl(url) {
